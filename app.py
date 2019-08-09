@@ -15,7 +15,7 @@ def sensor():
     process.start()
 
 sched = BackgroundScheduler(daemon=True)
-sched.add_job(sensor,'interval',minutes=10)
+sched.add_job(sensor,'interval',minutes=60*5)
 sched.start()
 
 app = Flask(__name__)
