@@ -49,5 +49,6 @@ class NewsquizPipeline(object):
         if item['title'] + item['publisher'] + item['topic'] in self.exist_articles:
             raise DropItem(f'Duplicated item found {item["title"]}')
         else:
+            self.exist_articles.add(item['title'] + item['publisher'] + item['topic'])
             self.save_article(item)
             return True

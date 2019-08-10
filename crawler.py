@@ -6,9 +6,9 @@ from scrapy.utils.project import get_project_settings
 
 process = CrawlerProcess(get_project_settings())
 
-process.crawl(UrbanisthanoiArtsCultureSpider)
-process.crawl(UrbanisthanoiEatDrinkSpider)
-# process.crawl(EvnexpressSportsSpider)
+# process.crawl(UrbanisthanoiArtsCultureSpider)
+# process.crawl(UrbanisthanoiEatDrinkSpider)
+process.crawl(EvnexpressTravelSpider)
 # process.crawl(EvnexpressLifeSpider)
 
 process.start()
