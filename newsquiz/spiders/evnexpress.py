@@ -4,6 +4,7 @@ import os
 import time
 from newsquiz.items import ArticleItem
 from pymongo import MongoClient
+from parsel import Selector
 
 class EvnexpressSpider(scrapy.Spider):
     name = 'evnexpress'
@@ -32,6 +33,8 @@ class EvnexpressSpider(scrapy.Spider):
     def parse(self, response):
         urls = [response.xpath('//div[@class="thumb_size thumb_left"]/a/@href').extract_first()] + response.xpath('//div[@id="vnexpress_folder_list_news"]/div/div/div/a/@href').extract()
 
+        # urls = ['https://e.vnexpress.net/news/travel/places/northern-vietnam-valley-unrolls-its-golden-carpet-3962891.html']
+
         for url in urls:
             if self.allowed_url in url and self.crawling:
                 yield scrapy.Request(url, callback=self.parse_article)
@@ -50,27 +53,25 @@ class EvnexpressSpider(scrapy.Spider):
             thumbnail = response.xpath('//div[@class="fck_detail"]//img/@src').extract_first()
 
 
-        if time.strptime(published_time, '%Y-%m-%d %H:%M') < self.crawled_date:
-            self.crawling = False
-            return
+        # if time.strptime(published_time, '%Y-%m-%d %H:%M') < self.crawled_date:
+        #     self.crawling = False
+        #     return
 
         author = response.xpath('//div[@class="author"]').extract_first()
         # des = response.xpath('//h2[contains(@class,"lead_post_detail")]').extract_first()
 
         html_content = response.xpath('//div[@class="fck_detail"]').extract_first()
-
-        content_text = [tmp.replace('\n', '').replace('\t', '').replace('\r', '') for tmp in response.xpath('//div[@class="fck_detail"]//text()').extract()]
+        
+        content_p_tags = response.xpath('//div[@class="fck_detail"]/p').extract()
         
         content = []
-        para = ''
-        for tmp in content_text:
-            if para.strip().endswith('.'):
-                content.append(para)
-                para = tmp
-            else:
-                para += tmp
-        
-        content.append(para)
+
+        for p_tag in content_p_tags:
+            sel = Selector(p_tag)
+            texts = [tmp.replace('\n', '').replace('\t', '').replace('\r', '') for tmp in sel.xpath('//text()').extract()]
+            texts = [tmp.strip() for tmp in texts if tmp.strip() != '']
+            print(' '.join(texts))
+            content.append(' '.join(texts))
 
         content = '\n'.join([tmp for tmp in content if tmp != ''])
 
@@ -85,7 +86,7 @@ class EvnexpressSpider(scrapy.Spider):
         item['publish_time'] = published_time
         item['publisher'] = self.name
         item['author'] = author
-        yield item
+        # yield item
 
         # TODO: logging    
 
