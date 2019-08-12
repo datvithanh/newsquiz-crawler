@@ -40,7 +40,7 @@ class EvnexpressSpider(scrapy.Spider):
             if self.allowed_url in url and self.crawling:
                 yield scrapy.Request(url, callback=self.parse_article)
 
-        if self.page <= self.MAX_PAGE and self.crawling:
+        if self.page < self.MAX_PAGE and self.crawling:
             self.page = self.page + 1
             yield scrapy.Request(self.start_urls[0] + '?page=' + str(self.page), callback=self.parse)
 
@@ -54,12 +54,11 @@ class EvnexpressSpider(scrapy.Spider):
             thumbnail = response.xpath('//div[@class="fck_detail"]//img/@src').extract_first()
 
 
-        # if time.strptime(published_time, '%Y-%m-%d %H:%M') < self.crawled_date:
-        #     self.crawling = False
-        #     return
+        if time.strptime(published_time, '%Y-%m-%d %H:%M') < self.crawled_date:
+            self.crawling = False
+            return
 
         author = response.xpath('//div[@class="author"]').extract_first()
-        # des = response.xpath('//h2[contains(@class,"lead_post_detail")]').extract_first()
 
         html_content = response.xpath('//div[@class="fck_detail"]').extract_first()
         
@@ -86,7 +85,7 @@ class EvnexpressSpider(scrapy.Spider):
         item['publish_time'] = published_time
         item['publisher'] = self.name
         item['author'] = author
-        # yield item
+        yield item
 
         # TODO: logging    
 

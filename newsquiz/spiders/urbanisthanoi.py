@@ -32,7 +32,7 @@ class UrbanisthanoiSpider(scrapy.Spider):
         docs = list(cur)
         publish_time = max([tmp['publish_time'] for tmp in docs], default='2015-01-01 00:00')
 
-        self.crawled_date = time.strptime(publish_time, '%Y-%m-%d %H:%M')
+        self.crawled_date = datetime.datetime.strptime(publish_time, '%Y-%m-%d %H:%M')
 
     def parse(self, response):
         urls = [response.xpath('//div[@class="leading leading-0"]//h2/a/@href').extract_first()] +  response.xpath('//div[@class="span6"]//div[@class="contentpaneopen"]/h2[@class="contentheading"]/a/@href').extract()
@@ -46,9 +46,9 @@ class UrbanisthanoiSpider(scrapy.Spider):
             if self.crawling:
                 yield scrapy.Request(self.domain + url, callback=self.parse_article)
 
-        # if self.page <= self.MAX_PAGE and self.crawling:
-        #     self.page = self.page + 1
-        #     yield scrapy.Request(self.start_urls[0] + '?start=' + str((self.page-1) * self.ITEMS_PER_PAGE), callback=self.parse)
+        if self.page < self.MAX_PAGE and self.crawling:
+            self.page = self.page + 1
+            yield scrapy.Request(self.start_urls[0] + '?start=' + str((self.page-1) * self.ITEMS_PER_PAGE), callback=self.parse)
 
     def parse_article(self, response):
         title = response.xpath('//h1[@class="contentheading"]/a/text()').extract_first().strip()
@@ -58,10 +58,15 @@ class UrbanisthanoiSpider(scrapy.Spider):
 
         published_time = response.xpath('//dd[@class="published"]/text()').extract_first().split(',')[-1].strip()
         time = datetime.datetime.strptime(published_time, '%d %B %Y %H:%M')
+        
+        if time < self.crawled_date:
+            self.crawling = False
+            return
+            
         published_time = time.strftime('%Y-%m-%d %H:%M')
 
         author = response.xpath('//dd[@class="createdby"]/text()').extract_first().split('.')[0].strip()[11:]
-        # TODO: clean this shit
+
         html_content = response.xpath('//div[@class="item-page"]').extract_first()
         
         html_content = re.sub(r'<h1 class="contentheading">[.|\S|\s]*?<\/h1>|<div class="article-tools clearfix">[.|\S|\s]*?<\/div>|<canvas class="progressiveMedia-canvas"><\/canvas>|<img class="progressiveMedia-thumbnail"[.|\S|\s]*?alt="">|<h3>[.|\S|\s]*?<\/h3>|<div class="sharethis-inline-share-buttons"[.|\S|\s]*?<\/div>', '', html_content)
@@ -89,7 +94,7 @@ class UrbanisthanoiSpider(scrapy.Spider):
         item['publish_time'] = published_time
         item['publisher'] = self.name
         item['author'] = author
-        # yield item
+        yield item
 
 class UrbanisthanoiArtsCultureSpider(UrbanisthanoiSpider):
     name = 'urbanisthanoi-hanoi-arts-culture'
