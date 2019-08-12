@@ -107,6 +107,15 @@ class VietnamnewsSocietySpider(VietnamnewsSpider):
 
         self.set_crawled_date()
 
+class VietnamnewsEconomySpider(VietnamnewsSpider):
+    name = 'vietnamnews-economy'
+
+    def __init__(self):
+        VietnamnewsSpider.__init__(self)
+        self.start_urls = ['https://vietnamnews.vn/economy']
+        self.topic = 'economy'
+
+        self.set_crawled_date()
 
 class VietnamnewsLifestyleSpider(VietnamnewsSpider):
     name = 'vietnamnews-lifestyle'
