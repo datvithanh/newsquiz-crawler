@@ -130,10 +130,3 @@ class EvnexpressSportsSpider(EvnexpressSpider):
         self.topic = 'sports'
 
         self.set_crawled_date()
-
-
-"""
-TODO: 
--   run multiple spider at a same time
--   periodically call the spider somehow
-"""

@@ -140,10 +140,3 @@ class UrbanisthanoiOldHanoiSpider(UrbanisthanoiSpider):
         self.topic = 'old-hanoi'
 
         self.set_crawled_date()
-
-
-"""
-TODO: 
--   run multiple spider at a same time
--   periodically call the spider somehow
-"""
