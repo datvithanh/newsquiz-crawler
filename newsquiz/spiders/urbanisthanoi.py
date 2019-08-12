@@ -5,6 +5,8 @@ import datetime
 import time
 from newsquiz.items import ArticleItem
 from pymongo import MongoClient
+from parsel import Selector
+import re
 
 class UrbanisthanoiSpider(scrapy.Spider):
     name = 'urbanisthanoi'
@@ -35,16 +37,18 @@ class UrbanisthanoiSpider(scrapy.Spider):
     def parse(self, response):
         urls = [response.xpath('//div[@class="leading leading-0"]//h2/a/@href').extract_first()] +  response.xpath('//div[@class="span6"]//div[@class="contentpaneopen"]/h2[@class="contentheading"]/a/@href').extract()
 
+        urls = ['/hanoi-bars-cafes/13389-ng%C3%B5-nooks-reng-reng-a-welcome-as-cold-as-the-coffee-at-hanoi-s-most-idiosyncratic-cafe']
+
         if not urls:
             self.crawling = False
-        print(urls)
+
         for url in urls:
             if self.crawling:
                 yield scrapy.Request(self.domain + url, callback=self.parse_article)
 
-        if self.page <= self.MAX_PAGE and self.crawling:
-            self.page = self.page + 1
-            yield scrapy.Request(self.start_urls[0] + '?start=' + str((self.page-1) * self.ITEMS_PER_PAGE), callback=self.parse)
+        # if self.page <= self.MAX_PAGE and self.crawling:
+        #     self.page = self.page + 1
+        #     yield scrapy.Request(self.start_urls[0] + '?start=' + str((self.page-1) * self.ITEMS_PER_PAGE), callback=self.parse)
 
     def parse_article(self, response):
         title = response.xpath('//h1[@class="contentheading"]/a/text()').extract_first().strip()
@@ -59,18 +63,18 @@ class UrbanisthanoiSpider(scrapy.Spider):
         author = response.xpath('//dd[@class="createdby"]/text()').extract_first().split('.')[0].strip()[11:]
         # TODO: clean this shit
         html_content = response.xpath('//div[@class="item-page"]').extract_first()
-        content_text = [tmp.replace('\n', '').replace('\t', '').replace('\r', '').replace('\xa0', '') for tmp in response.xpath('//div[@class="item-page"]/p//text()').extract()]
+        
+        html_content = re.sub(r'<h1 class="contentheading">[.|\S|\s]*?<\/h1>|<div class="article-tools clearfix">[.|\S|\s]*?<\/div>|<canvas class="progressiveMedia-canvas"><\/canvas>|<img class="progressiveMedia-thumbnail"[.|\S|\s]*?alt="">|<h3>[.|\S|\s]*?<\/h3>|<div class="sharethis-inline-share-buttons"[.|\S|\s]*?<\/div>', '', html_content)
 
+        content_p_tags = response.xpath('//div[@class="item-page"]/p').extract()
+        
         content = []
-        para = ''
-        for tmp in content_text:
-            if para.strip().endswith('.') or para.strip().endswith(':'):
-                content.append(para)
-                para = tmp
-            else:
-                para += ' ' + tmp.strip()
 
-        content.append(para)
+        for p_tag in content_p_tags:
+            sel = Selector(p_tag)
+            texts = [tmp.replace('\n', '').replace('\t', '').replace('\r', '') for tmp in sel.xpath('//text()').extract()]
+            texts = [tmp.strip() for tmp in texts if tmp.strip() != '']
+            content.append(' '.join(texts))
 
         content = '\n'.join([tmp for tmp in content if tmp != ''])
 
@@ -85,7 +89,7 @@ class UrbanisthanoiSpider(scrapy.Spider):
         item['publish_time'] = published_time
         item['publisher'] = self.name
         item['author'] = author
-        yield item
+        # yield item
 
 class UrbanisthanoiArtsCultureSpider(UrbanisthanoiSpider):
     name = 'urbanisthanoi-hanoi-arts-culture'

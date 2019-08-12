@@ -33,6 +33,7 @@ class EvnexpressSpider(scrapy.Spider):
     def parse(self, response):
         urls = [response.xpath('//div[@class="thumb_size thumb_left"]/a/@href').extract_first()] + response.xpath('//div[@id="vnexpress_folder_list_news"]/div/div/div/a/@href').extract()
 
+        urls = [tmp for tmp in urls if not ('news/video' in tmp or 'infographics' in tmp or 'https://e.vnexpress.net/photo' in tmp)]
         # urls = ['https://e.vnexpress.net/news/travel/places/northern-vietnam-valley-unrolls-its-golden-carpet-3962891.html']
 
         for url in urls:
@@ -70,7 +71,6 @@ class EvnexpressSpider(scrapy.Spider):
             sel = Selector(p_tag)
             texts = [tmp.replace('\n', '').replace('\t', '').replace('\r', '') for tmp in sel.xpath('//text()').extract()]
             texts = [tmp.strip() for tmp in texts if tmp.strip() != '']
-            print(' '.join(texts))
             content.append(' '.join(texts))
 
         content = '\n'.join([tmp for tmp in content if tmp != ''])
