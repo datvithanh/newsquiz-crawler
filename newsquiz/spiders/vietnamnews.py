@@ -56,11 +56,19 @@ class VietnamnewsSpider(scrapy.Spider):
             
         published_time = time.strftime('%Y-%m-%d %H:%M')
 
-        author = response.xpath('//span[@class="vnnews-user-post"]/text()').extract_first().strip()
+        author = 'None'
+        
+        try:
+            author = response.xpath('//span[@class="vnnews-user-post"]/text()').extract_first().strip()
+        except:
+            author = 'None'
 
         html_content = response.xpath('//div[@class="vnnews-text-post"]').extract_first()
-        
-        content_p_tags = response.xpath('//div[@class="vnnews-text-post"]/div/p/span/span').extract()
+
+        content_p_tags = response.xpath('//div[@class="vnnews-text-post"]/div/p').extract()        
+
+        if len(content_p_tags) <= 2:
+            content_p_tags = response.xpath('//div[@class="vnnews-text-post"]/p').extract()
         
         content = []
 
@@ -71,7 +79,10 @@ class VietnamnewsSpider(scrapy.Spider):
             content.append(' '.join(texts))
 
         content = '\n'.join([tmp for tmp in content if tmp != ''])
-
+        
+        if content.strip() == '':
+            return
+        
         # store item
         item = ArticleItem()
         item['topic'] = self.topic

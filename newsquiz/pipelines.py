@@ -19,7 +19,7 @@ class NewsquizPipeline(object):
         cur = self.db.articles.find()
         docs = list(cur)
 
-        self.exist_articles = set([tmp['title'] + tmp['publisher'] + tmp ['topic'] for tmp in docs])
+        self.exist_articles = set([tmp['title'] + tmp['publisher'] for tmp in docs])
     
     def generate_filename(self):
         fname = uuid.uuid5(uuid.NAMESPACE_OID, str(datetime.datetime.now()))
@@ -46,9 +46,9 @@ class NewsquizPipeline(object):
 
 
     def process_item(self, item, spider):
-        if item['title'] + item['publisher'] + item['topic'] in self.exist_articles:
+        if item['title'] + item['publisher'] in self.exist_articles:
             raise DropItem(f'Duplicated item found {item["title"]}')
         else:
-            self.exist_articles.add(item['title'] + item['publisher'] + item['topic'])
+            self.exist_articles.add(item['title'] + item['publisher'])
             self.save_article(item)
             return True

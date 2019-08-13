@@ -1,14 +1,11 @@
-from newsquiz.spiders.evnexpress import EvnexpressBusinessSpider, EvnexpressTravelSpider, EvnexpressSportsSpider, EvnexpressLifeSpider
-from newsquiz.spiders.urbanisthanoi import UrbanisthanoiArtsCultureSpider, UrbanisthanoiEatDrinkSpider, UrbanisthanoiNewsSpider, UrbanisthanoiSocietySpider, UrbanisthanoiOldHanoiSpider
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
-
-
+from newsquiz.spiders.evnexpress import EvnexpressBusinessSpider, EvnexpressTravelSpider, EvnexpressSportsSpider, EvnexpressLifeSpider
+from newsquiz.spiders.urbanisthanoi import UrbanisthanoiArtsCultureSpider, UrbanisthanoiEatDrinkSpider, UrbanisthanoiNewsSpider, UrbanisthanoiSocietySpider,UrbanisthanoiOldHanoiSpider
+from newsquiz.spiders.vietnamnews import VietnamnewsPoliticsLawsSpider, VietnamnewsSocietySpider, VietnamnewsEconomySpider, VietnamnewsLifestyleSpider, VietnamnewsSportsSpider, VietnamnewsEnvironmentSpider
+from newsquiz.spiders.kpop import KpopSpider
 process = CrawlerProcess(get_project_settings())
 
-process.crawl(UrbanisthanoiArtsCultureSpider)
-# process.crawl(UrbanisthanoiEatDrinkSpider)
-# process.crawl(EvnexpressTravelSpider)
-# process.crawl(EvnexpressLifeSpider)
+process.crawl(KpopSpider)
 
 process.start()

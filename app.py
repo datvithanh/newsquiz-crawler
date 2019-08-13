@@ -1,12 +1,13 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask
+from scrapy.crawler import CrawlerProcess
+from scrapy.utils.project import get_project_settings
 from newsquiz.spiders.evnexpress import EvnexpressBusinessSpider, EvnexpressTravelSpider, EvnexpressSportsSpider, EvnexpressLifeSpider
 from newsquiz.spiders.urbanisthanoi import UrbanisthanoiArtsCultureSpider, UrbanisthanoiEatDrinkSpider, UrbanisthanoiNewsSpider, UrbanisthanoiSocietySpider,UrbanisthanoiOldHanoiSpider
 from newsquiz.spiders.vietnamnews import VietnamnewsPoliticsLawsSpider, VietnamnewsSocietySpider, VietnamnewsEconomySpider, VietnamnewsLifestyleSpider, VietnamnewsSportsSpider, VietnamnewsEnvironmentSpider
-from scrapy.crawler import CrawlerProcess
-from scrapy.utils.project import get_project_settings
+from newsquiz.spiders.kpop import KpopSpider
 
-clses = [EvnexpressBusinessSpider, EvnexpressTravelSpider, EvnexpressSportsSpider, EvnexpressLifeSpider, UrbanisthanoiArtsCultureSpider, UrbanisthanoiEatDrinkSpider, UrbanisthanoiNewsSpider, UrbanisthanoiSocietySpider, UrbanisthanoiOldHanoiSpider, VietnamnewsPoliticsLawsSpider, VietnamnewsSocietySpider, VietnamnewsEconomySpider, VietnamnewsLifestyleSpider, VietnamnewsSportsSpider, VietnamnewsEnvironmentSpider]
+clses = [EvnexpressBusinessSpider, EvnexpressTravelSpider, EvnexpressSportsSpider, EvnexpressLifeSpider, UrbanisthanoiArtsCultureSpider, UrbanisthanoiEatDrinkSpider, UrbanisthanoiNewsSpider, UrbanisthanoiSocietySpider, UrbanisthanoiOldHanoiSpider, VietnamnewsPoliticsLawsSpider, VietnamnewsSocietySpider, VietnamnewsEconomySpider, VietnamnewsLifestyleSpider, VietnamnewsSportsSpider, VietnamnewsEnvironmentSpider, KpopSpider]
 
 process = CrawlerProcess(get_project_settings())
 for cl in clses:
