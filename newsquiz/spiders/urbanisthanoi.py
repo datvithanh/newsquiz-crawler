@@ -23,6 +23,7 @@ class UrbanisthanoiSpider(scrapy.Spider):
         self.crawling = True
         self.topic = None
         self.crawled_date = None
+        self.f = open('log.txt', 'a')
         
 
     def set_crawled_date(self):
@@ -37,14 +38,16 @@ class UrbanisthanoiSpider(scrapy.Spider):
     def parse(self, response):
         urls = [response.xpath('//div[@class="leading leading-0"]//h2/a/@href').extract_first()] +  response.xpath('//div[@class="span6"]//div[@class="contentpaneopen"]/h2[@class="contentheading"]/a/@href').extract()
 
-        urls = ['/hanoi-bars-cafes/13389-ng%C3%B5-nooks-reng-reng-a-welcome-as-cold-as-the-coffee-at-hanoi-s-most-idiosyncratic-cafe']
+        imgs = [response.xpath('//div[@class="leading leading-0"]/div/p/a/img/@src').extract_first()] +  response.xpath('//div[@class="span6"]//div[@class="contentpaneopen"]/p/a/img/@src').extract()
+
 
         if not urls:
             self.crawling = False
 
-        for url in urls:
+        for url, img in zip(urls, imgs):
+            # self.f.write(f'{url}\n')
             if self.crawling:
-                yield scrapy.Request(self.domain + url, callback=self.parse_article)
+                yield scrapy.Request(self.domain + url, callback=self.parse_article, meta={'thumbnail': img})
 
         if self.page < self.MAX_PAGE and self.crawling:
             self.page = self.page + 1
@@ -54,7 +57,8 @@ class UrbanisthanoiSpider(scrapy.Spider):
         title = response.xpath('//h1[@class="contentheading"]/a/text()').extract_first().strip()
         if title.strip().startswith('[Photos]') or title.strip().startswith('[Video]'):
             return
-        thumbnail = response.xpath('//img[@class="progressiveMedia-thumbnail"]/@src').extract_first()[2:-5] + 'l.jpg'
+        thumbnail = response.meta.get('thumbnail')
+        # thumbnail = response.xpath('//img[@class="progressiveMedia-thumbnail"]/@src').extract_first()[2:-5] + 'l.jpg'
 
         published_time = response.xpath('//dd[@class="published"]/text()').extract_first().split(',')[-1].strip()
         time = datetime.datetime.strptime(published_time, '%d %B %Y %H:%M')

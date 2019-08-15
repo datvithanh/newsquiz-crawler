@@ -1,6 +1,3 @@
-from apscheduler.schedulers.background import BackgroundScheduler
-from flask import Flask
-from scrapy.utils.project import get_project_settings
 import scrapy
 from twisted.internet import reactor, defer
 from scrapy.crawler import CrawlerRunner
@@ -11,6 +8,7 @@ from newsquiz.spiders.vietnamnews import VietnamnewsPoliticsLawsSpider, Vietnamn
 from newsquiz.spiders.kpop import KpopSpider
 
 clses = [EvnexpressBusinessSpider, EvnexpressTravelSpider, EvnexpressSportsSpider, EvnexpressLifeSpider, UrbanisthanoiArtsCultureSpider, UrbanisthanoiEatDrinkSpider, UrbanisthanoiNewsSpider, UrbanisthanoiSocietySpider, UrbanisthanoiOldHanoiSpider, VietnamnewsPoliticsLawsSpider, VietnamnewsSocietySpider, VietnamnewsEconomySpider, VietnamnewsLifestyleSpider, VietnamnewsSportsSpider, VietnamnewsEnvironmentSpider, KpopSpider]
+clses = [UrbanisthanoiArtsCultureSpider, UrbanisthanoiEatDrinkSpider, UrbanisthanoiNewsSpider, UrbanisthanoiOldHanoiSpider, UrbanisthanoiSocietySpider]
 
 configure_logging()
 runner = CrawlerRunner()
@@ -22,20 +20,4 @@ def crawl():
     reactor.stop()
 
 crawl()
-
-def sensor():
-    reactor.run()
-
-sched = BackgroundScheduler(daemon=True)
-sched.add_job(sensor,'interval',minutes=60*5)
-sched.start()
-
-app = Flask(__name__)
-
-@app.route("/home")
-def home():
-    """ Function for test purposes. """
-    return "Welcome Home :) !"
-
-if __name__ == "__main__":
-    app.run()
+reactor.run() # the script will block here until the last crawl call is finished

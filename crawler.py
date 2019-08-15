@@ -4,8 +4,9 @@ from newsquiz.spiders.evnexpress import EvnexpressBusinessSpider, EvnexpressTrav
 from newsquiz.spiders.urbanisthanoi import UrbanisthanoiArtsCultureSpider, UrbanisthanoiEatDrinkSpider, UrbanisthanoiNewsSpider, UrbanisthanoiSocietySpider,UrbanisthanoiOldHanoiSpider
 from newsquiz.spiders.vietnamnews import VietnamnewsPoliticsLawsSpider, VietnamnewsSocietySpider, VietnamnewsEconomySpider, VietnamnewsLifestyleSpider, VietnamnewsSportsSpider, VietnamnewsEnvironmentSpider
 from newsquiz.spiders.kpop import KpopSpider
+
 process = CrawlerProcess(get_project_settings())
 
-process.crawl(KpopSpider)
+process.crawl(UrbanisthanoiOldHanoiSpider)
 
 process.start()

@@ -95,6 +95,7 @@ class EvnexpressTravelSpider(EvnexpressSpider):
     def __init__(self):
         EvnexpressSpider.__init__(self)
         self.start_urls = ['https://e.vnexpress.net/news/travel']
+        self.allowed_url = 'https://e.vnexpress.net/news/travel'
         self.topic = 'travel'
 
         self.set_crawled_date()
@@ -105,6 +106,7 @@ class EvnexpressBusinessSpider(EvnexpressSpider):
     def __init__(self):
         EvnexpressSpider.__init__(self)
         self.start_urls = ['https://e.vnexpress.net/news/business']
+        self.allowed_url = 'https://e.vnexpress.net/news/business'
         self.topic = 'business'
 
         self.set_crawled_date()
@@ -116,6 +118,7 @@ class EvnexpressLifeSpider(EvnexpressSpider):
     def __init__(self):
         EvnexpressSpider.__init__(self)
         self.start_urls = ['https://e.vnexpress.net/news/life']
+        self.allowed_url = 'https://e.vnexpress.net/news/life'
         self.topic = 'life'
 
         self.set_crawled_date()
@@ -126,6 +129,7 @@ class EvnexpressSportsSpider(EvnexpressSpider):
     def __init__(self):
         EvnexpressSpider.__init__(self)
         self.start_urls = ['https://e.vnexpress.net/news/sports']
+        self.allowed_url = 'https://e.vnexpress.net/news/sports'
         self.topic = 'sports'
 
         self.set_crawled_date()
